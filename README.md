@@ -36,7 +36,6 @@ Student-Record-System/
 │
 ├── student_record.c
 ├── students.dat        // Generated automatically when records are added
-├── .gitignore
 └── README.md
 ```
 
