@@ -15,7 +15,10 @@ struct student
 void addStudent();
 void displayStudents();
 void searchStudent();
+void updateStudent();
 void deleteStudent();
+
+int checkDuplicateRoll(int);
 
 int main()
 {
@@ -23,48 +26,80 @@ int main()
 
     while (1)
     {
-        printf("\n=====================================================\n");
-        printf("         STUDENT RECORD MANAGEMENT SYSTEM\n");
+        system("cls");
+
+        printf("\n");
+        printf("=====================================================\n");
+        printf("          STUDENT RECORD MANAGEMENT SYSTEM\n");
         printf("=====================================================\n");
 
         printf("1. Add Student\n");
         printf("2. Display Students\n");
         printf("3. Search Student\n");
-        printf("4. Delete Student\n");
-        printf("5. Exit\n");
+        printf("4. Update Student\n");
+        printf("5. Delete Student\n");
+        printf("6. Exit\n");
 
-        printf("\nEnter your choice: ");
-        scanf("%d", &choice);
+        printf("\nEnter Choice : ");
+        scanf("%d",&choice);
 
-        switch (choice)
+        switch(choice)
         {
-        case 1:
-            addStudent();
-            break;
+            case 1:
+                addStudent();
+                break;
 
-        case 2:
-            displayStudents();
-            break;
+            case 2:
+                displayStudents();
+                break;
 
-        case 3:
-            searchStudent();
-            break;
+            case 3:
+                searchStudent();
+                break;
 
-        case 4:
-            deleteStudent();
-            break;
+            case 4:
+                updateStudent();
+                break;
 
-        case 5:
-            printf("\nThank You!\n");
-            exit(0);
+            case 5:
+                deleteStudent();
+                break;
 
-        default:
-            printf("\nInvalid Choice!\n");
+            case 6:
+                printf("\nThank You!\n");
+                exit(0);
+
+            default:
+                printf("\nInvalid Choice!\n");
         }
 
-        printf("\nPress any key to continue...");
+        printf("\n\nPress any key...");
         getch();
     }
+
+    return 0;
+}
+
+int checkDuplicateRoll(int roll)
+{
+    FILE *fp;
+    struct student s;
+
+    fp=fopen("students.dat","rb");
+
+    if(fp==NULL)
+        return 0;
+
+    while(fread(&s,sizeof(struct student),1,fp))
+    {
+        if(s.rollNo==roll)
+        {
+            fclose(fp);
+            return 1;
+        }
+    }
+
+    fclose(fp);
 
     return 0;
 }
@@ -73,46 +108,56 @@ void addStudent()
 {
     FILE *fp;
     struct student s;
-    char choice;
+    char ch;
 
-    fp = fopen("students.dat", "ab");
+    fp=fopen("students.dat","ab");
 
-    if (fp == NULL)
+    if(fp==NULL)
     {
-        printf("\nUnable to open file!\n");
+        printf("Unable to open file.");
         return;
     }
 
     do
     {
-        printf("\n------------ Add Student ------------\n");
+        printf("\n----------- Add Student -----------\n");
 
-        printf("Enter Roll Number : ");
-        scanf("%d", &s.rollNo);
+        printf("Roll Number : ");
+        scanf("%d",&s.rollNo);
 
-        printf("Enter First Name : ");
-        scanf("%19s", s.firstName);
+        if(checkDuplicateRoll(s.rollNo))
+        {
+            printf("\nRoll Number already exists!\n");
 
-        printf("Enter Last Name : ");
-        scanf("%19s", s.lastName);
+            printf("\nContinue? (Y/N): ");
+            scanf(" %c",&ch);
 
-        printf("Enter Branch : ");
-        scanf("%19s", s.branch);
+            continue;
+        }
 
-        printf("Enter Address : ");
-        scanf("%29s", s.address);
+        printf("First Name : ");
+        scanf("%19s",s.firstName);
 
-        printf("Enter Percentage : ");
-        scanf("%f", &s.percentage);
+        printf("Last Name : ");
+        scanf("%19s",s.lastName);
 
-        fwrite(&s, sizeof(struct student), 1, fp);
+        printf("Branch : ");
+        scanf("%19s",s.branch);
 
-        printf("\nStudent record added successfully.\n");
+        printf("Address : ");
+        scanf("%29s",s.address);
 
-        printf("\nDo you want to add another student? (Y/N): ");
-        scanf(" %c", &choice);
+        printf("Percentage : ");
+        scanf("%f",&s.percentage);
 
-    } while (choice == 'Y' || choice == 'y');
+        fwrite(&s,sizeof(struct student),1,fp);
+
+        printf("\nStudent Added Successfully.\n");
+
+        printf("\nAdd Another Student (Y/N): ");
+        scanf(" %c",&ch);
+
+    }while(ch=='Y'||ch=='y');
 
     fclose(fp);
 }
@@ -131,14 +176,19 @@ void displayStudents()
         return;
     }
 
-    printf("\n========================================================================================\n");
-    printf("%-10s %-15s %-15s %-15s %-20s %-10s\n",
-           "Roll No", "First Name", "Last Name", "Branch", "Address", "Percentage");
-    printf("========================================================================================\n");
+    printf("\n=============================================================================================\n");
+    printf("%-8s %-15s %-15s %-15s %-20s %-10s\n",
+           "Roll",
+           "First Name",
+           "Last Name",
+           "Branch",
+           "Address",
+           "Percentage");
+    printf("=============================================================================================\n");
 
-    while (fread(&s, sizeof(struct student), 1, fp) == 1)
+    while (fread(&s, sizeof(struct student), 1, fp))
     {
-        printf("%-10d %-15s %-15s %-15s %-20s %-10.2f\n",
+        printf("%-8d %-15s %-15s %-15s %-20s %-10.2f\n",
                s.rollNo,
                s.firstName,
                s.lastName,
@@ -151,8 +201,10 @@ void displayStudents()
 
     if (!found)
     {
-        printf("\nNo student records available.\n");
+        printf("\nNo Records Available.\n");
     }
+
+    printf("=============================================================================================\n");
 
     fclose(fp);
 }
@@ -161,6 +213,7 @@ void searchStudent()
 {
     FILE *fp;
     struct student s;
+
     int roll;
     int found = 0;
 
@@ -172,23 +225,95 @@ void searchStudent()
         return;
     }
 
-    printf("\nEnter Roll Number to Search: ");
+    printf("\nEnter Roll Number : ");
     scanf("%d", &roll);
 
-    while (fread(&s, sizeof(struct student), 1, fp) == 1)
+    while (fread(&s, sizeof(struct student), 1, fp))
     {
         if (s.rollNo == roll)
         {
-            printf("\n========== Student Found ==========\n");
+            printf("\n====================================\n");
+            printf("        STUDENT FOUND\n");
+            printf("====================================\n");
 
             printf("Roll Number : %d\n", s.rollNo);
-            printf("First Name : %s\n", s.firstName);
-            printf("Last Name  : %s\n", s.lastName);
-            printf("Branch     : %s\n", s.branch);
-            printf("Address    : %s\n", s.address);
-            printf("Percentage : %.2f\n", s.percentage);
+            printf("First Name  : %s\n", s.firstName);
+            printf("Last Name   : %s\n", s.lastName);
+            printf("Branch      : %s\n", s.branch);
+            printf("Address     : %s\n", s.address);
+            printf("Percentage  : %.2f\n", s.percentage);
+
+            printf("====================================\n");
 
             found = 1;
+            break;
+        }
+    }
+
+    if (!found)
+    {
+        printf("\nStudent with Roll Number %d not found.\n", roll);
+    }
+
+    fclose(fp);
+}
+
+void updateStudent()
+{
+    FILE *fp;
+    struct student s;
+    int roll;
+    int found = 0;
+
+    fp = fopen("students.dat", "rb+");
+
+    if (fp == NULL)
+    {
+        printf("\nNo student records found!\n");
+        return;
+    }
+
+    printf("\nEnter Roll Number to Update: ");
+    scanf("%d", &roll);
+
+    while (fread(&s, sizeof(struct student), 1, fp))
+    {
+        if (s.rollNo == roll)
+        {
+            found = 1;
+
+            printf("\n========== Current Details ==========\n");
+            printf("Roll Number : %d\n", s.rollNo);
+            printf("First Name  : %s\n", s.firstName);
+            printf("Last Name   : %s\n", s.lastName);
+            printf("Branch      : %s\n", s.branch);
+            printf("Address     : %s\n", s.address);
+            printf("Percentage  : %.2f\n", s.percentage);
+
+            printf("\n========== Enter New Details ==========\n");
+
+            printf("First Name : ");
+            scanf("%19s", s.firstName);
+
+            printf("Last Name : ");
+            scanf("%19s", s.lastName);
+
+            printf("Branch : ");
+            scanf("%19s", s.branch);
+
+            printf("Address : ");
+            scanf("%29s", s.address);
+
+            printf("Percentage : ");
+            scanf("%f", &s.percentage);
+
+            /* Move file pointer back to overwrite current record */
+            fseek(fp, -sizeof(struct student), SEEK_CUR);
+
+            fwrite(&s, sizeof(struct student), 1, fp);
+
+            printf("\nStudent record updated successfully!\n");
+
             break;
         }
     }
@@ -207,6 +332,7 @@ void deleteStudent()
     struct student s;
     int roll;
     int found = 0;
+    char choice;
 
     fp = fopen("students.dat", "rb");
 
@@ -220,7 +346,7 @@ void deleteStudent()
 
     if (temp == NULL)
     {
-        printf("\nUnable to create temporary file!\n");
+        printf("\nUnable to create temporary file.\n");
         fclose(fp);
         return;
     }
@@ -228,12 +354,27 @@ void deleteStudent()
     printf("\nEnter Roll Number to Delete: ");
     scanf("%d", &roll);
 
-    while (fread(&s, sizeof(struct student), 1, fp) == 1)
+    while (fread(&s, sizeof(struct student), 1, fp))
     {
         if (s.rollNo == roll)
         {
             found = 1;
-            continue;   // Skip writing the matching record
+
+            printf("\nStudent Found\n");
+            printf("-----------------------------\n");
+            printf("Roll Number : %d\n", s.rollNo);
+            printf("Name        : %s %s\n", s.firstName, s.lastName);
+            printf("Branch      : %s\n", s.branch);
+            printf("Percentage  : %.2f\n", s.percentage);
+
+            printf("\nAre you sure you want to delete this record? (Y/N): ");
+            scanf(" %c", &choice);
+
+            if (choice == 'Y' || choice == 'y')
+            {
+                printf("\nRecord Deleted Successfully.\n");
+                continue;       // Skip writing this record
+            }
         }
 
         fwrite(&s, sizeof(struct student), 1, temp);
@@ -245,8 +386,9 @@ void deleteStudent()
     remove("students.dat");
     rename("temp.dat", "students.dat");
 
-    if (found)
-        printf("\nStudent record deleted successfully.\n");
-    else
+    if (!found)
+    {
         printf("\nStudent with Roll Number %d not found.\n", roll);
+    }
 }
+
