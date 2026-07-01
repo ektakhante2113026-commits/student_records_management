@@ -7,13 +7,13 @@ struct student
     char first_name[20];
     char last_name[20];
     int roll_no;
-    char Class[10];
-    char vill[20];
-    float per;
+    char branch[20];
+    char address[30];
+    float percentage;
 };
 
-void addstudent();
-void studentrecord();
+void addStudent();
+void displayStudents();
 
 int main()
 {
@@ -21,28 +21,25 @@ int main()
 
     while (choice != 3)
     {
-        printf("\n\n");
-        printf("\t\t=============================================\n");
-        printf("\t\t Government Polytechnic, Nagpur\n");
-        printf("\t\t STUDENT RECORD MANAGEMENT SYSTEM\n");
-        printf("\t\t=============================================\n");
+        printf("\n====================================================");
+        printf("\n        STUDENT RECORD MANAGEMENT SYSTEM");
+        printf("\n====================================================");
 
         printf("\n1. Add Student");
-        printf("\n2. Display Records");
+        printf("\n2. Display Students");
         printf("\n3. Exit");
 
-        printf("\n\nEnter your choice: ");
+        printf("\n\nEnter your choice : ");
         scanf("%d", &choice);
-        fflush(stdin);
 
         switch (choice)
         {
         case 1:
-            addstudent();
+            addStudent();
             break;
 
         case 2:
-            studentrecord();
+            displayStudents();
             printf("\n\nPress any key to continue...");
             getch();
             break;
@@ -53,7 +50,6 @@ int main()
 
         default:
             printf("\nInvalid Choice!\n");
-            printf("Press any key to continue...");
             getch();
         }
     }
@@ -61,104 +57,83 @@ int main()
     return 0;
 }
 
-void addstudent()
+void addStudent()
 {
     FILE *fp;
-    struct student info;
-    char another;
-    int i, n;
+    struct student s;
+    char choice;
+
+    fp = fopen("information.txt", "a");
+
+    if (fp == NULL)
+    {
+        printf("Unable to open file!\n");
+        return;
+    }
 
     do
     {
-        fp = fopen("information.txt", "a");
+        printf("\n------------ Add Student ------------\n");
 
-        if (fp == NULL)
-        {
-            printf("Unable to open file.\n");
-            return;
-        }
+        printf("First Name : ");
+        scanf("%19s", s.first_name);
 
-        fprintf(fp, "\n");
+        printf("Last Name : ");
+        scanf("%19s", s.last_name);
 
-        printf("\n========== Add Student ==========\n");
+        printf("Roll Number : ");
+        scanf("%d", &s.roll_no);
 
-        printf("Enter First Name : ");
-        gets(info.first_name);
+        printf("Branch : ");
+        scanf("%19s", s.branch);
 
-        for (i = 0; info.first_name[i] != '\0'; i++)
-        {
-            n = info.first_name[i];
-            fprintf(fp, "%c", n);
-        }
+        printf("Address : ");
+        scanf("%29s", s.address);
 
-        fprintf(fp, "\t");
+        printf("Percentage : ");
+        scanf("%f", &s.percentage);
 
-        printf("Enter Last Name : ");
-        gets(info.last_name);
+        fprintf(fp,
+                "%-15s %-15s %-10d %-10s %-15s %.2f\n",
+                s.first_name,
+                s.last_name,
+                s.roll_no,
+                s.branch,
+                s.address,
+                s.percentage);
 
-        for (i = 0; info.last_name[i] != '\0'; i++)
-        {
-            n = info.last_name[i];
-            fprintf(fp, "%c", n);
-        }
+        printf("\nStudent record added successfully.");
 
-        fprintf(fp, "\t");
+        printf("\nDo you want to add another student? (Y/N): ");
+        scanf(" %c", &choice);
 
-        printf("Enter Roll Number : ");
-        scanf("%d", &info.roll_no);
-        fprintf(fp, "%d\t", info.roll_no);
+    } while (choice == 'Y' || choice == 'y');
 
-        printf("Enter Branch : ");
-        scanf("%s", info.Class);
-
-        for (i = 0; info.Class[i] != '\0'; i++)
-        {
-            n = info.Class[i];
-            fprintf(fp, "%c", n);
-        }
-
-        fprintf(fp, "\t");
-
-        printf("Enter Address : ");
-        scanf("%s", info.vill);
-
-        for (i = 0; info.vill[i] != '\0'; i++)
-        {
-            n = info.vill[i];
-            fprintf(fp, "%c", n);
-        }
-
-        fprintf(fp, "\t");
-
-        printf("Enter Percentage : ");
-        scanf("%f", &info.per);
-        fprintf(fp, "%.2f", info.per);
-
-        fclose(fp);
-
-        printf("\nRecord Stored Successfully!\n");
-
-        printf("\nDo you want to add another record? (Y/N): ");
-        scanf(" %c", &another);
-        fflush(stdin);
-
-    } while (another == 'Y' || another == 'y');
+    fclose(fp);
 }
 
-void studentrecord()
+void displayStudents()
 {
     FILE *fp;
-    int ch;
+    char ch;
 
     fp = fopen("information.txt", "r");
 
     if (fp == NULL)
     {
-        printf("\nNo records found!\n");
+        printf("\nNo student records found!\n");
         return;
     }
 
-    printf("\n========== STUDENT RECORDS ==========\n\n");
+    printf("\n==============================================================\n");
+    printf("%-15s %-15s %-10s %-10s %-15s %s\n",
+           "First Name",
+           "Last Name",
+           "Roll No",
+           "Branch",
+           "Address",
+           "Percentage");
+    printf("==============================================================\n");
 
     while ((ch = fgetc(fp)) != EOF)
     {
