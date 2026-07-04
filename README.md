@@ -87,23 +87,6 @@ Each student record contains:
 
 ---
 
-## Concepts Covered
-
-This project demonstrates:
-
-* Structures in C
-* Menu-driven programming
-* Modular programming using functions
-* Binary file handling
-* CRUD (Create, Read, Update, Delete) operations
-* Searching records
-* Updating records using `fseek()`
-* Deleting records using a temporary file
-* Input validation
-* Duplicate record checking
-
----
-
 ## How to Compile and Run
 
 ### GCC
@@ -140,21 +123,6 @@ Enter Choice : 1
 
 ---
 
-## Future Improvements
-
-Possible enhancements include:
-
-* Login system for administrators
-* Search by student name
-* Sort records by Roll Number or Percentage
-* Export records to CSV
-* Calculate class statistics (highest, lowest, average percentage)
-* Cross-platform compatibility (remove `conio.h` dependency)
-* Split the project into multiple source and header files
-* Improved input validation for names and percentages
-
----
-
 ## Learning Outcomes
 
 Through this project, I gained practical experience with:
@@ -175,7 +143,3 @@ Through this project, I gained practical experience with:
 This project was developed as part of my C programming learning journey to strengthen my understanding of file handling, structures, and data management.
 
 ---
-
-## License
-
-This project is intended for educational and learning purposes.
